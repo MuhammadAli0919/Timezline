@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f3ee">
     <meta name="description" content="Timezline creates made-to-order furniture, interiors and workspaces, handcrafted around the way you live.">
+    <meta name="keywords" content="bespoke furniture Karachi, made-to-order furniture Pakistan, custom kitchens, wardrobes, office furniture">
+    <meta name="geo.region" content="PK-SD">
+    <meta name="geo.placename" content="Karachi">
+    <meta property="og:title" content="Timezline | Made for your measure">
+    <meta property="og:description" content="Thoughtful furniture and interiors, made to order in Karachi around your space, materials and way of life.">
     <title>Timezline | Made for your measure</title>
     <link rel="icon" type="image/png" href="/assets/timezline-mark.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
     <script src="/script.js" defer></script>
   </head>
@@ -22,7 +27,7 @@
         <span class="loader-track" aria-hidden="true"><span></span></span>
       </div>
     </div>
-    <div class="announcement-bar">MADE TO ORDER IN KARACHI <span>·</span> EVERY PIECE, MADE AROUND YOU</div>
+    <div class="announcement-bar">MADE-TO-ORDER: CUSTOM DIMENSIONS, MATERIALS &amp; COLORS AVAILABLE <span>·</span> CRAFTED IN KARACHI</div>
     <header class="site-header" id="top">
       <a class="brand" href="#home" aria-label="Timezline home">
         <img src="/assets/timezline-mark.png" alt="" class="brand-mark">
@@ -77,7 +82,7 @@
         </div>
         <div class="category-grid">
           <button class="category-tile category-home" data-category="HOME" type="button">
-            <span class="category-number">01</span><span class="category-name">Home</span><span class="category-arrow">↗</span>
+            <span class="category-number">01</span><span class="category-name">Home &amp; Living</span><span class="category-arrow">↗</span>
           </button>
           <button class="category-tile category-office" data-category="OFFICE" type="button">
             <span class="category-number">02</span><span class="category-name">Office</span><span class="category-arrow">↗</span>
@@ -110,6 +115,9 @@
             <div class="filter-controls">
               <label class="filter-field"><span>Room</span><select id="category-filter" aria-label="Filter by category"><option value="">All categories</option></select></label>
               <label class="filter-field"><span>Collection</span><select id="subcategory-filter" aria-label="Filter by collection" disabled><option value="">All collections</option></select></label>
+              <label class="filter-field"><span>Workstation design</span><select id="design-filter" aria-label="Filter by workstation design"><option value="">All designs</option></select></label>
+              <label class="filter-field"><span>Layout</span><select id="layout-filter" aria-label="Filter by workstation layout"><option value="">All layouts</option></select></label>
+              <label class="filter-field"><span>Seats</span><select id="capacity-filter" aria-label="Filter by seating capacity"><option value="">Any capacity</option></select></label>
             </div>
             <p class="results-count" id="results-count" aria-live="polite">Loading designs…</p>
           </div>
@@ -157,12 +165,42 @@
     <footer class="site-footer" id="contact">
       <div class="footer-main">
         <div class="footer-brand-block"><a class="brand footer-brand" href="#top"><img src="/assets/timezline-mark.png" alt="" class="brand-mark"><span class="brand-name">timezline</span></a><p>Thoughtful furniture,<br>made for your measure.</p></div>
-        <div class="footer-column"><p class="footer-label">EXPLORE</p><a href="#catalog">Home</a><a href="#catalog" data-footer-category="OFFICE">Office</a><a href="#catalog" data-footer-category="KITCHEN">Kitchen</a><a href="#process">Bespoke process</a></div>
-        <div class="footer-column"><p class="footer-label">GET IN TOUCH</p><a href="mailto:timezline@gmail.com">timezline@gmail.com</a><a href="tel:+923009263594">+92 300 9263 594</a><button type="button" data-open-quote>Request a custom quote <span aria-hidden="true">↗</span></button></div>
+        <div class="footer-column"><p class="footer-label">EXPLORE</p><a href="#catalog" data-footer-category="HOME">Home &amp; Living</a><a href="#catalog" data-footer-category="OFFICE">Office</a><a href="#catalog" data-footer-category="KITCHEN">Kitchen</a><a href="#catalog" data-footer-category="DOORS">Doors</a><a href="#catalog" data-footer-category="WARDROBES">Wardrobes</a><a href="#catalog" data-footer-category="FLOORING">Flooring</a><a href="#process">Bespoke process</a></div>
+        <div class="footer-column"><p class="footer-label">GET IN TOUCH</p><a href="mailto:timezline@gmail.com">timezline@gmail.com</a><a href="tel:+923009263594">+92 300 9263 594</a><a href="https://wa.me/923009263594" target="_blank" rel="noreferrer">WhatsApp Timezline ↗</a><button type="button" data-open-quote>Request a custom quote <span aria-hidden="true">↗</span></button></div>
         <div class="footer-column footer-address"><p class="footer-label">VISIT OUR WORKSHOP</p><p>Plot R425, Sector 15-B,<br>Buffer Zone, Karachi, Pakistan</p><a class="social-link" href="https://instagram.com/timezline" target="_blank" rel="noreferrer"><svg class="social-icon instagram-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="instagram-dot" cx="17.7" cy="6.7" r="1"/></svg><span>Instagram @timezline</span><span class="social-arrow" aria-hidden="true">↗</span></a><a class="social-link" href="https://facebook.com/timezline" target="_blank" rel="noreferrer"><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 21v-8.2h2.75l.41-3.2H13.5V7.56c0-.93.26-1.56 1.6-1.56h1.7V3.13c-.29-.04-1.3-.13-2.48-.13-2.45 0-4.12 1.5-4.12 4.25V9.6H7.44v3.2h2.76V21h3.3Z"/></svg><span>Facebook @timezline</span><span class="social-arrow" aria-hidden="true">↗</span></a><a class="social-link" href="https://linkedin.com/company/timezline" target="_blank" rel="noreferrer"><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.2 7.6a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8ZM3.6 9h3.2v11.4H3.6V9Zm5.2 0h3.1v1.56h.04c.43-.81 1.49-1.66 3.07-1.66 3.28 0 3.89 2.16 3.89 4.97v6.53h-3.23v-5.79c0-1.38-.02-3.16-1.93-3.16-1.93 0-2.23 1.51-2.23 3.06v5.89H8.8V9Z"/></svg><span>LinkedIn @timezline</span><span class="social-arrow" aria-hidden="true">↗</span></a></div>
       </div>
       <div class="footer-bottom"><span>© <span id="current-year"></span> TIMEZLINE · KARACHI, PAKISTAN</span><span>DESIGNED WITH INTENTION. MADE TO ORDER.</span><a href="https://www.timezline.com">WWW.TIMEZLINE.COM</a></div>
     </footer>
+
+    <dialog class="product-dialog" id="product-dialog" aria-labelledby="product-dialog-title">
+      <button class="product-dialog-close" type="button" aria-label="Close design details">×</button>
+      <div class="product-detail-layout">
+        <div class="product-gallery">
+          <img id="detail-image" src="" alt="">
+          <div class="gallery-thumbnails" id="gallery-thumbnails" aria-label="Design gallery"></div>
+        </div>
+        <div class="product-detail-copy">
+          <p class="eyebrow" id="detail-category"></p>
+          <h2 id="product-dialog-title"></h2>
+          <p id="detail-description"></p>
+          <p class="made-to-order-badge">Made-to-order: Custom dimensions, materials &amp; colors available.</p>
+          <h3>Choose a finish direction</h3>
+          <div class="finish-swatches" id="finish-swatches" role="group" aria-label="Available finish samples"></div>
+          <p class="selected-finish" id="selected-finish" aria-live="polite"></p>
+          <h3>Imagine it in your dimensions</h3>
+          <div class="dimension-visualizer">
+            <div class="dimension-object" id="dimension-object" aria-hidden="true"><span></span></div>
+            <div class="dimension-inputs">
+              <label>Width (cm)<input id="visual-width" type="number" min="20" max="1000" value="180" inputmode="decimal"></label>
+              <label>Depth (cm)<input id="visual-depth" type="number" min="20" max="500" value="90" inputmode="decimal"></label>
+              <label>Height (cm)<input id="visual-height" type="number" min="20" max="500" value="75" inputmode="decimal"></label>
+            </div>
+          </div>
+          <p class="visualizer-note">An initial guide only. Final dimensions are confirmed with our design team.</p>
+          <button class="button button-dark detail-quote-button" type="button">Request Custom Quote <span aria-hidden="true">↗</span></button>
+        </div>
+      </div>
+    </dialog>
 
     <dialog class="quote-dialog" id="quote-dialog" aria-labelledby="quote-title">
       <div class="dialog-layout">
@@ -173,12 +211,15 @@
           <label class="form-field"><span>What would you like made? *</span><input type="text" name="designReference" id="design-reference" placeholder="e.g. a made-to-measure dining table" required maxlength="160"></label>
           <div class="form-row"><label class="form-field"><span>Your name *</span><input type="text" name="name" autocomplete="name" required maxlength="100"></label><label class="form-field"><span>Phone number *</span><input type="tel" name="phone" autocomplete="tel" required maxlength="30"></label></div>
           <label class="form-field"><span>Email address *</span><input type="email" name="email" autocomplete="email" required maxlength="160"></label>
-          <div class="form-row"><label class="form-field"><span>Approx. dimensions</span><input type="text" name="dimensions" placeholder="W × D × H, or room size" maxlength="160"></label><label class="form-field"><span>Preferred material</span><select name="material"><option value="">Let’s discuss</option><option>Solid wood</option><option>Veneer</option><option>Laminated board</option><option>Metal</option><option>Upholstery</option><option>Glass</option><option>Other / advise me</option></select></label></div>
+          <div class="form-field"><span>Custom dimensions (cm)</span><div class="dimension-inputs quote-dimensions"><label>Width<input type="number" name="dimensionsWidth" min="1" max="1000" inputmode="decimal" placeholder="W"></label><label>Depth<input type="number" name="dimensionsDepth" min="1" max="500" inputmode="decimal" placeholder="D"></label><label>Height<input type="number" name="dimensionsHeight" min="1" max="500" inputmode="decimal" placeholder="H"></label></div></div>
+          <label class="form-field"><span>Room size or dimensions notes</span><input type="text" name="dimensionsNotes" placeholder="Room size, wall measurements or other details" maxlength="160"></label>
+          <div class="form-row"><label class="form-field"><span>Preferred material</span><select name="material"><option value="">Let’s discuss</option><option>Solid wood</option><option>Veneer</option><option>Laminated board</option><option>Metal</option><option>Upholstery</option><option>Glass</option><option>Other / advise me</option></select></label><label class="form-field"><span>Preferred finish / color</span><input type="text" name="finish" placeholder="e.g. natural oak, olive linen" maxlength="100"></label></div>
           <label class="form-field"><span>Anything else we should know?</span><textarea name="notes" rows="3" placeholder="Your room, references, practical needs or finish preferences…" maxlength="2500"></textarea></label>
           <label class="upload-field"><input type="file" name="referenceImages" id="reference-images" accept=".jpg,.jpeg,.png,.webp,.pdf" multiple><span class="upload-icon" aria-hidden="true">＋</span><span><strong>Add reference files</strong><small>Images or PDF · up to 8 MB each</small></span></label>
           <p class="file-list" id="file-list" aria-live="polite">No files selected</p>
           <div class="form-submit-row"><p>Your details are only used to respond to this enquiry.</p><button class="button button-dark" type="submit"><span class="submit-label">Send enquiry</span><span aria-hidden="true">↗</span></button></div>
           <p class="form-feedback" id="form-feedback" role="status" aria-live="polite"></p>
+          <a class="whatsapp-followup" id="whatsapp-followup" target="_blank" rel="noreferrer" hidden>Continue this enquiry on WhatsApp ↗</a>
         </form>
       </div>
     </dialog>
@@ -210,5 +251,23 @@
       <p class="chat-footnote">A SMALL STUDIO, WITH A HUMAN ON THE OTHER END.</p>
     </section>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FurnitureStore",
+        "name": "Timezline",
+        "url": "https://www.timezline.com",
+        "email": "timezline@gmail.com",
+        "telephone": "+92 300 9263 594",
+        "founder": { "@type": "Person", "name": "Muhammad Ibrahim Umer" },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Plot R425 Sector 15-B Bufferzone",
+          "addressLocality": "Karachi",
+          "addressCountry": "PK"
+        },
+        "sameAs": ["https://instagram.com/timezline"]
+      }
+    </script>
   </body>
 </html>

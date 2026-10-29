@@ -1,11 +1,15 @@
 const categoryFilter = document.querySelector("#category-filter");
 const subcategoryFilter = document.querySelector("#subcategory-filter");
+const designFilter = document.querySelector("#design-filter");
+const layoutFilter = document.querySelector("#layout-filter");
+const capacityFilter = document.querySelector("#capacity-filter");
 const productGrid = document.querySelector("#product-grid");
 const resultsCount = document.querySelector("#results-count");
 const emptyState = document.querySelector("#catalog-empty");
 const loadMoreButton = document.querySelector("#load-more");
 const searchInput = document.querySelector("#site-search");
 const quoteDialog = document.querySelector("#quote-dialog");
+const productDialog = document.querySelector("#product-dialog");
 const quoteForm = document.querySelector("#quote-form");
 const formFeedback = document.querySelector("#form-feedback");
 const quoteButton = quoteForm.querySelector("[type=submit]");
@@ -26,6 +30,8 @@ let toastTimer;
 let taxonomy = [];
 let catalogRecoveryTimer;
 let catalogRecoveryDelay = 5000;
+let selectedQuoteProduct = null;
+let selectedDetailFinish = "Natural oak";
 
 const categoryImages = {
   HOME: [
@@ -80,7 +86,19 @@ async function loadTaxonomy() {
       option.textContent = titleCase(category.name);
       categoryFilter.append(option);
     }
-    await loadProducts();
+    const linkedProductId = new URLSearchParams(window.location.search).get("product");
+    if (linkedProductId && /^\d+$/.test(linkedProductId)) {
+      const response = await fetch(`/api/products/${linkedProductId}`);
+      if (!response.ok) throw new Error("This shared design link is no longer available.");
+      const product = await response.json();
+      categoryFilter.value = product.category;
+      updateSubcategories();
+      subcategoryFilter.value = product.subcategory;
+      await loadProducts();
+      openProductDetails(product);
+    } else {
+      await loadProducts();
+    }
   } catch (error) {
     if (!categoryFilter.querySelector('option[value="HOME"]')) {
       categoryFilter.replaceChildren(new Option("All categories", ""));
@@ -115,6 +133,7 @@ function clearCatalogRecovery() {
 }
 
 function titleCase(value) {
+  if (value === "HOME") return "Home & Living";
   return value.toLowerCase().replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
 }
 
@@ -126,6 +145,26 @@ function updateSubcategories() {
   for (const collection of selected?.collections ?? []) {
     const option = new Option(collection.name, collection.name);
     subcategoryFilter.append(option);
+  }
+}
+
+async function loadAttributeFilters() {
+  try {
+    const response = await fetch("/api/filters");
+    if (!response.ok) throw new Error("Could not load catalog filters.");
+    const filters = await response.json();
+    for (const [select, key, label] of [
+      [designFilter, "design", "All designs"],
+      [layoutFilter, "layout", "All layouts"],
+      [capacityFilter, "capacity", "Any capacity"]
+    ]) {
+      select.replaceChildren(new Option(label, ""));
+      for (const value of filters[key] || []) {
+        select.add(new Option(key === "capacity" ? `${value} ${value === "1" ? "seat" : "seats"}` : value, value));
+      }
+    }
+  } catch (error) {
+    showToast("Workstation filters are temporarily unavailable.");
   }
 }
 
@@ -153,6 +192,9 @@ async function loadProducts({ append = false } = {}) {
   });
   if (categoryFilter.value) params.set("category", categoryFilter.value);
   if (subcategoryFilter.value) params.set("subcategory", subcategoryFilter.value);
+  if (designFilter.value) params.set("design", designFilter.value);
+  if (layoutFilter.value) params.set("layout", layoutFilter.value);
+  if (capacityFilter.value) params.set("capacity", capacityFilter.value);
   if (searchInput.value.trim()) params.set("search", searchInput.value.trim());
   resultsCount.textContent = "Finding your starting point…";
 
@@ -219,7 +261,7 @@ function makeProductCard(product) {
   imageWrap.append(photo);
   const tag = document.createElement("span");
   tag.className = "product-tag";
-  tag.textContent = product.featured ? "STUDIO DESIGN IDEA" : "MADE TO ORDER";
+  tag.textContent = "MADE TO ORDER";
   imageWrap.append(tag);
 
   const meta = document.createElement("div");
@@ -234,27 +276,121 @@ function makeProductCard(product) {
   description.className = "product-description";
   description.textContent = product.description;
   details.append(categoryLabel, title, description);
+  const actions = document.createElement("div");
+  actions.className = "product-actions";
+  const view = document.createElement("button");
+  view.className = "product-details-link";
+  view.type = "button";
+  view.textContent = "View design";
+  view.addEventListener("click", () => openProductDetails(product));
   const quote = document.createElement("button");
   quote.className = "product-quote";
   quote.type = "button";
   quote.dataset.productId = String(product.id);
   quote.dataset.productName = product.title;
-  quote.innerHTML = 'Customize & order <span aria-hidden="true">↗</span>';
+  quote.innerHTML = 'Request Custom Quote <span aria-hidden="true">↗</span>';
   quote.addEventListener("click", () => openQuote(product));
-  meta.append(details, quote);
+  actions.append(view, quote);
+  meta.append(details, actions);
   card.append(imageWrap, meta);
   return card;
 }
 
-function openQuote(product = null) {
+function openQuote(product = null, dimensions = null, finish = "") {
   formFeedback.textContent = "";
   formFeedback.classList.remove("success");
   quoteForm.reset();
+  document.querySelector("#whatsapp-followup").hidden = true;
+  selectedQuoteProduct = product;
   document.querySelector("#quote-product-id").value = product?.id != null ? String(product.id) : "";
   document.querySelector("#design-reference").value = product ? product.title : "";
+  if (dimensions) {
+    document.querySelector('[name="dimensionsWidth"]').value = dimensions.width;
+    document.querySelector('[name="dimensionsDepth"]').value = dimensions.depth;
+    document.querySelector('[name="dimensionsHeight"]').value = dimensions.height;
+  }
+  if (finish) quoteForm.elements.finish.value = finish;
   document.querySelector("#file-list").textContent = "No files selected";
   quoteDialog.showModal();
   window.setTimeout(() => document.querySelector("#design-reference").focus(), 50);
+}
+
+function openProductDetails(product) {
+  const images = categoryImages[product.category] ?? categoryImages.HOME;
+  const initialImage = images[product.imageIndex % images.length];
+  document.querySelector("#detail-image").src = initialImage;
+  document.querySelector("#detail-image").alt = `${product.title}, made-to-order by Timezline`;
+  document.querySelector("#detail-category").textContent = `${titleCase(product.category)} / ${product.subcategory}`;
+  document.querySelector("#product-dialog-title").textContent = product.title;
+  document.querySelector("#detail-description").textContent = product.description;
+  const thumbnails = document.querySelector("#gallery-thumbnails");
+  thumbnails.replaceChildren();
+  images.forEach((image, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "gallery-thumbnail";
+    button.setAttribute("aria-label", `View design gallery image ${index + 1}`);
+    const thumbnail = document.createElement("img");
+    thumbnail.src = image;
+    thumbnail.alt = "";
+    button.append(thumbnail);
+    button.addEventListener("click", () => {
+      document.querySelector("#detail-image").src = image;
+    });
+    thumbnails.append(button);
+  });
+  const swatches = [
+    { name: "Natural oak veneer", color: "#b28a5d", image: "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=640&q=85" },
+    { name: "Walnut veneer", color: "#654b3b", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=640&q=85" },
+    { name: "Smoked ash veneer", color: "#77736a", image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=640&q=85" },
+    { name: "Warm white laminate", color: "#e5dfd1", image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=640&q=85" },
+    { name: "Olive upholstery", color: "#77785d", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=640&q=85" },
+    { name: "Terracotta fabric", color: "#b86f50", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=640&q=85" }
+  ];
+  const swatchContainer = document.querySelector("#finish-swatches");
+  swatchContainer.replaceChildren();
+  for (const swatch of swatches) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "finish-swatch";
+    button.style.setProperty("--swatch-color", swatch.color);
+    button.setAttribute("aria-label", `${swatch.name} finish`);
+    button.setAttribute("aria-pressed", String(swatch.name === selectedDetailFinish));
+    const sample = document.createElement("img");
+    sample.src = swatch.image;
+    sample.alt = "";
+    sample.loading = "lazy";
+    sample.addEventListener("error", () => sample.remove(), { once: true });
+    button.append(sample);
+    button.addEventListener("click", () => {
+      selectedDetailFinish = swatch.name;
+      document.querySelector("#selected-finish").textContent = `Selected finish: ${swatch.name}`;
+      swatchContainer.querySelectorAll(".finish-swatch").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+    });
+    swatchContainer.append(button);
+  }
+  document.querySelector("#selected-finish").textContent = `Selected finish: ${selectedDetailFinish}`;
+  productDialog.querySelector(".detail-quote-button").onclick = () => {
+    const dimensions = {
+      width: document.querySelector("#visual-width").value,
+      depth: document.querySelector("#visual-depth").value,
+      height: document.querySelector("#visual-height").value
+    };
+    productDialog.close();
+    openQuote(product, dimensions, selectedDetailFinish);
+  };
+  productDialog.showModal();
+}
+
+function updateDimensionPreview() {
+  const width = Number(document.querySelector("#visual-width").value) || 180;
+  const depth = Number(document.querySelector("#visual-depth").value) || 90;
+  const height = Number(document.querySelector("#visual-height").value) || 75;
+  const visual = document.querySelector("#dimension-object");
+  visual.style.setProperty("--object-width", `${Math.min(100, Math.max(28, width / 4))}%`);
+  visual.style.setProperty("--object-depth", `${Math.min(92, Math.max(28, depth / 2))}%`);
+  visual.style.setProperty("--object-height", `${Math.min(80, Math.max(28, height / 2))}%`);
+  visual.style.setProperty("--depth-offset", `${Math.round(Math.min(14, Math.max(4, depth / 12)))}px`);
 }
 
 function showToast(message) {
@@ -386,6 +522,9 @@ categoryFilter.addEventListener("change", () => {
   loadProducts();
 });
 subcategoryFilter.addEventListener("change", () => loadProducts());
+for (const filter of [designFilter, layoutFilter, capacityFilter]) {
+  filter.addEventListener("change", () => loadProducts());
+}
 let searchTimer;
 searchInput.addEventListener("input", () => {
   window.clearTimeout(searchTimer);
@@ -406,6 +545,7 @@ document.querySelectorAll("[data-footer-category]").forEach((link) => {
     categoryFilter.value = link.dataset.footerCategory;
     updateSubcategories();
     loadProducts();
+    document.querySelector("#catalog").scrollIntoView({ behavior: "smooth" });
   });
 });
 
@@ -423,8 +563,15 @@ navigation.querySelectorAll("a").forEach((link) => link.addEventListener("click"
   navigation.classList.remove("is-open");
 }));
 document.querySelector(".dialog-close").addEventListener("click", () => quoteDialog.close());
+document.querySelector(".product-dialog-close").addEventListener("click", () => productDialog.close());
 quoteDialog.addEventListener("click", (event) => {
   if (event.target === quoteDialog) quoteDialog.close();
+});
+productDialog.addEventListener("click", (event) => {
+  if (event.target === productDialog) productDialog.close();
+});
+document.querySelectorAll(".dimension-inputs input").forEach((input) => {
+  if (input.closest(".dimension-visualizer")) input.addEventListener("input", updateDimensionPreview);
 });
 document.querySelector("#reference-images").addEventListener("change", (event) => {
   const files = [...event.target.files];
@@ -466,22 +613,76 @@ quoteForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   formFeedback.textContent = "";
   const data = new FormData(quoteForm);
+  const width = data.get("dimensionsWidth");
+  const depth = data.get("dimensionsDepth");
+  const height = data.get("dimensionsHeight");
+  const dimensions = [width && `W ${width} cm`, depth && `D ${depth} cm`, height && `H ${height} cm`].filter(Boolean).join(" × ");
+  const dimensionsNotes = String(data.get("dimensionsNotes") || "").trim();
+  data.set("dimensions", [dimensions, dimensionsNotes].filter(Boolean).join(" · "));
+  data.delete("dimensionsWidth");
+  data.delete("dimensionsDepth");
+  data.delete("dimensionsHeight");
+  data.delete("dimensionsNotes");
+  const product = selectedQuoteProduct;
+  const productCode = product?.id != null ? `TZ-${String(product.id).padStart(4, "0")}` : "CUSTOM";
+  const productUrl = new URL(window.location.href);
+  productUrl.search = "";
+  if (product?.id != null) productUrl.searchParams.set("product", String(product.id));
+  productUrl.hash = "catalog";
+  const whatsappText = [
+    "Timezline custom quote enquiry",
+    `Item: ${data.get("designReference")}`,
+    `Item code: ${productCode}`,
+    `Product URL: ${productUrl.href}`,
+    `Name: ${data.get("name")}`,
+    `Phone: ${data.get("phone")}`,
+    `Email: ${data.get("email")}`,
+    `Dimensions: ${dimensions || "To be discussed"}${dimensionsNotes ? `; ${dimensionsNotes}` : ""}`,
+    `Material: ${data.get("material") || "To be discussed"}`,
+    `Finish / color: ${data.get("finish") || "To be discussed"}`,
+    `Notes: ${data.get("notes") || "None"}`
+  ].join("\n");
+  const whatsappUrl = `https://wa.me/923009263594?text=${encodeURIComponent(whatsappText)}`;
+  const whatsappWindow = window.open("about:blank", "_blank");
+  let enquirySavedWithoutWhatsAppTab = false;
   quoteButton.disabled = true;
   quoteButton.querySelector(".submit-label").textContent = "Sending…";
   try {
     const response = await fetch("/api/quotes", { method: "POST", body: data });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error || "We couldn’t send your request.");
-    quoteDialog.close();
-    showToast(`Thank you, ${payload.name}. Your enquiry is with our team.`);
+    const emailStatusMessage = payload.notifications?.email === "not_configured"
+      ? " Email notifications need SMTP setup."
+      : payload.notifications?.email === "failed"
+        ? " Email notification could not be delivered."
+        : "";
+    const whatsappFollowup = document.querySelector("#whatsapp-followup");
+    whatsappFollowup.href = whatsappUrl;
+    whatsappFollowup.hidden = false;
+    if (whatsappWindow) {
+      whatsappWindow.location.href = whatsappUrl;
+      quoteDialog.close();
+      showToast(`Thank you, ${payload.name}. Your enquiry is saved and ready to send on WhatsApp.${emailStatusMessage}`);
+    } else {
+      enquirySavedWithoutWhatsAppTab = true;
+      quoteButton.disabled = true;
+      quoteButton.querySelector(".submit-label").textContent = "Enquiry saved";
+      formFeedback.textContent = `Your enquiry is saved. Use the link below to send the same details to our WhatsApp team.${emailStatusMessage}`;
+      formFeedback.classList.add("success");
+    }
   } catch (error) {
+    if (whatsappWindow) whatsappWindow.close();
     formFeedback.textContent = error.message || "A connection issue stopped your enquiry from sending. Please try again.";
     formFeedback.classList.remove("success");
   } finally {
-    quoteButton.disabled = false;
-    quoteButton.querySelector(".submit-label").textContent = "Send enquiry";
+    if (!enquirySavedWithoutWhatsAppTab) {
+      quoteButton.disabled = false;
+      quoteButton.querySelector(".submit-label").textContent = "Send enquiry";
+    }
   }
 });
 
 document.querySelector("#current-year").textContent = String(new Date().getFullYear());
+loadAttributeFilters();
+updateDimensionPreview();
 loadTaxonomy();
